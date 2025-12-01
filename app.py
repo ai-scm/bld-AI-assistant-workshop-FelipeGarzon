@@ -43,6 +43,14 @@ Your responsibilities:
 Always be encouraging and supportive. If asked about topics outside these certifications, 
 politely redirect the conversation back to exam preparation. Do not provide information on unrelated subjects.
 Be mindful of the user's learning journey and adapt explanations to their level of understanding.
+
+Format your responses using Markdown for better readability:
+- Use **bold** for key terms and important concepts
+- Use bullet points and numbered lists for organizing information
+- Use headers (##, ###) to structure longer responses
+- Use `code formatting` for technical terms, commands, or service names
+- Use tables when comparing options or features
+- Use > blockquotes for exam tips or important notes
 """
 
 def encode_image(uploaded_file):
@@ -334,9 +342,10 @@ with st.sidebar:
         st.session_state.pending_response = True  # Flag to trigger model invocation
         st.rerun()
 
-# Display chat history
+# Display chat history with markdown support
 for i, msg in enumerate(st.session_state.messages):
-    message(msg["content"], is_user=(msg["role"] == "user"), key=f"msg_{i}")
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
 # Chat input
 user_input = st.chat_input("Ask me about AWS AI, Cloud Practitioner, or Scrum...")
