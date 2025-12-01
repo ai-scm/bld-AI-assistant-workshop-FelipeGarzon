@@ -331,6 +331,7 @@ with st.sidebar:
             "Practice Questions": "Give me 3 practice questions covering AWS AI, Cloud, and Scrum topics."
         }
         st.session_state.messages.append({"role": "user", "content": topic_prompts[topic]})
+        st.session_state.pending_response = True  # Flag to trigger model invocation
         st.rerun()
 
 # Display chat history
@@ -347,7 +348,12 @@ if user_input:
         full_message = f"Based on this study material:\n\n{st.session_state.uploaded_content[:3000]}\n\nUser question: {user_input}"
     
     st.session_state.messages.append({"role": "user", "content": user_input})
-    
+    st.session_state.pending_response = True  # Flag to trigger model invocation
+    st.session_state.pending_full_message = full_message
+    st.rerun()
+
+# Process pending response (after rerun so message displays first)
+if st.session_state.get("pending_response", False):
     # Prepare image data if available
     image_data = None
     image_type = None
@@ -358,6 +364,7 @@ if user_input:
     # Build messages for API
     api_messages = st.session_state.messages.copy()
     if st.session_state.uploaded_content and st.session_state.uploaded_type == "text":
+        full_message = st.session_state.get("pending_full_message", api_messages[-1]["content"])
         api_messages[-1] = {"role": "user", "content": full_message}
     
     # Get response from Bedrock
@@ -368,6 +375,8 @@ if user_input:
             response = invoke_bedrock_simple(api_messages, image_data, image_type)
     
     st.session_state.messages.append({"role": "assistant", "content": response})
+    st.session_state.pending_response = False
+    st.session_state.pending_full_message = None
     st.rerun()
 
 # Clear chat button
