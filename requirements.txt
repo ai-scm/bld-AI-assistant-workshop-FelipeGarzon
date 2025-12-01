@@ -1,0 +1,8 @@
+streamlit
+streamlit-chat
+boto3
+botocore
+Pillow
+PyPDF2
+python-docx
+python-dotenv
